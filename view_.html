@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+	<head>
+
+		<title>COCOMO-II</title>
+		<script language = "javascript" type="text/javascript">
+			<!--
+        var x;
+        //Function to determine the type of input
+				function getvalue(){
+          x = document.calculateForm.myInput.value;
+          // if(x == "1"){
+          //   alert("Please select one between SLOC and FP");
+          // }
+          if(x == "2"){
+            document.getElementById("SLOC").style.display = "block"; 
+            document.getElementById("myInput").disabled = true;
+          }
+          else if(x == "3"){
+            document.getElementById("FP").style.display = "block"; 
+            document.getElementById("LF").style.display = "block";
+            document.getElementById("myInput").disabled = true;
+
+          }
+				}
+
+				
+        var KLOC,fp,lf,sloc;
+        //Function to print the value of calculated KLOC 
+        function showKLOC(){
+          // if(x == "1"){
+          //   document.getElementById("showKLOC").innerHTML = "&nbsp&nbsp <b>Select SLOC or FP above.</b>" ;
+          //}
+          if (x == "2"){
+            sloc = Number(document.getElementById("SLOC1").value);
+            //document.getElementById("SLOC1").disabled = true;
+            console.log(sloc);
+            KLOC = sloc/1000.0;
+            document.getElementById("showKLOC").innerHTML = "&nbsp&nbspKLOC = " + KLOC;
+          }
+          else if (x == "3"){
+            fp = Number(document.getElementById("FP1").value);
+            lf = Number(document.getElementById("Lang").value);            
+            KLOC = fp*lf/1000.0;
+            console.log(fp);
+            console.log(lf);
+            document.getElementById("showKLOC").innerHTML = "&nbsp&nbspKLOC = " + KLOC;
+          }
+          else{
+            document.getElementById("showKLOC").innerHTML = "&nbsp&nbsp <b>Select SLOC or FP above.</b>" ;
+          }
+          console.log(KLOC);
+          
+        }
+        //Values of scale drivers
+        var prec = [6.2, 4.96, 3.72, 2.48, 1.24, 0];
+        var flex = [5.07, 4.05, 3.04, 2.03, 1.01, 0];
+        var resl = [7.07, 5.62, 4.24, 2.83, 1.49, 0];
+        var team = [5.48, 4.38, 3.29, 2.19, 1.1, 0];
+        var pmat = [7.8, 6.24, 4.68, 3.12, 1.56, 0];
+
+        var B;
+        //Values of cost drivers
+        var rely = [0.82, 0.92, 1.00, 1.10, 1.26];
+        var data = [0.90, 1.00, 1.14, 1.28];
+        var cplx = [0.73, 0.87, 1.00, 1.17, 1.34, 1.74];
+        var ruse = [0.95, 1.00, 1.07, 1.15, 1.24];
+        var docu = [0.81, 0.91, 1.00, 1.11, 1.23];
+        var time = [1.00, 1.11, 1.29, 1.63];
+        var stor = [1.00, 1.05, 1.17, 1.46];
+        var pvol = [0.87, 1.00, 1.15, 1.30];
+        var acap = [1.42, 1.19, 1.00, 0.85, 0.71];
+        var pcap = [1.34, 1.15, 1.00, 0.88, 0.76];
+        var pcon = [1.29, 1.12, 1.00, 0.90, 0.81];
+        var apex = [1.22, 1.10, 1.00, 0.88, 0.81];
+        var plex = [1.19, 1.09, 1.00, 0.91, 0.85];
+        var ltex = [1.20, 1.09, 1.00, 0.91, 0.84];
+        var tool = [1.17, 1.09, 1.00, 0.90, 0.78];
+        var site = [1.22, 1.09, 1.00, 0.93, 0.86, 0.80];
+        var sced = [1.43, 1.14, 1.00, 1.00, 1.00];
+
+        var EAF;
+        var effort, tdev, cost, totcost,category;
+        //Function to calculate the effort, Development Time and Cost
+        function calculate(){
+          category = document.getElementById("category").value;
+          console.log(category);
+          B = 0.91 + 0.01*(
+              prec[document.getElementById("PREC").value]
+              + flex[document.getElementById("FLEX").value]
+              + resl[document.getElementById("RESL").value]
+              + team[document.getElementById("TEAM").value]
+              + pmat[document.getElementById("PMAT").value]);
+          console.log(B);
+          EAF = rely[document.getElementById("RELY").value]
+                * data[document.getElementById("DATA").value]
+                * cplx[document.getElementById("CPLX").value]
+                * ruse[document.getElementById("RUSE").value]
+                * docu[document.getElementById("DOCU").value]
+                * time[document.getElementById("TIME").value]
+                * stor[document.getElementById("STOR").value]
+                * pvol[document.getElementById("PVOL").value]
+                * acap[document.getElementById("ACAP").value]
+                * pcap[document.getElementById("PCAP").value]
+                * pcon[document.getElementById("PCON").value]
+                * apex[document.getElementById("APEX").value]
+                * plex[document.getElementById("PLEX").value]
+                * ltex[document.getElementById("LTEX").value]
+                * tool[document.getElementById("TOOL").value]
+                * site[document.getElementById("SITE").value]
+                * sced[document.getElementById("SCED").value];
+              console.log(EAF);
+
+          effort = 2.94 * Math.pow(KLOC, B) * EAF;
+          if(isNaN(effort)){
+            alert("Fill all the specified entries to get the estimation.");
+            location.reload();
+            return;
+          }
+          console.log(effort);
+          var F = 0.28 + 0.2 * (B - 0.91);
+          tdev = 3.67 * Math.pow(effort, F);
+          console.log(tdev);
+          cost = Number(document.getElementById("Cost").value);
+          totcost = effort * cost;
+          console.log(totcost);
+          effort = effort.toFixed(3);
+          tdev = tdev.toFixed(3);
+          totcost = totcost.toFixed(3);
+          document.getElementById("output").innerHTML = category + " Type <br> Effort (in person-month):&nbsp&nbsp" + effort + "<br> Development Time (in months):&nbsp&nbsp" + tdev + "<br> Total Cost (in dollars):&nbsp&nbsp" + totcost; 
+        }
+
+        //Function to reset the the input value
+        function resetKLOC(){
+            //document.reset();
+          document.getElementById("showKLOC").innerHTML = "";
+          if(x == "2"){
+            //console.log(document.getElementById("SLOC1").defaultvalue )
+            document.getElementById("SLOC").style.display = "none";
+          }
+          else if(x == "3"){
+            document.getElementById("FP").style.display = "none";
+            document.getElementById("LF").style.display = "none";
+          }
+          document.getElementById("myInput").disabled = false;
+
+          
+          
+        }
+
+
+
+				
+			//-->
+
+		</script>
+  </head>
+		<body>
+      <center>
+      <div style="text-align : center; width : 100%;"><h1><b><u>Intermediate COCOMO-II Simulator</u></b></h1></strong></div>
+      </center>
+			<form id = "calculateForm" name = "calculateForm">
+        <p align = "right"><input type="button" id = "reload" value="Reload Page" onclick = "location.reload()" ><br>
+          <a href="../cocomo/Reference.pdf" target = "_blank">Reference</a>
+        </p>
+        <!-- Dropdown for software category -->
+        <fieldset>
+          <legend>Category of Software</legend>
+          <p><center>
+             <label>Select  </label>
+             <select id = "category">
+               <option value = "Organic">Organic</option>
+               <option value = "Semidetached">Semidetached</option>
+               <option value = "Embedded">Embedded</option>
+             </select>
+          </center></p>
+        </fieldset>
+        <br><br>
+        <div id = "div1" name = "div1">
+        <!-- Selection of Input type -->
+        <fieldset>
+          <legend>Software Size</legend>
+          <p>
+             <label>Sizing Method  </label>
+             <select id = "myInput" name = "myInput" onclick = "getvalue()">
+              <option value = "1" selected = "selected" disabled>Choose Input Type</option>
+               <option value = "2">Source Lines Of Code</option>
+               <option value = "3">Function Point</option>
+             </select>
+          </p>
+          <span id = "SLOC" style= "display:none">SLOC: &nbsp <input type = "Number" id = "SLOC1" name = "SLOC" placeholder = "Enter SLOC here"></span>
+          <span id = "FP" style= "display:none">FP: &nbsp <input type = "Number" id = "FP1" name = "FP" placeholder = "Enter FP here"></span>
+          <span id = "LF" style= "display:none">Language: &nbsp 
+            <!-- Dropdown for language factors -->
+            <select id="Lang">
+              <option value="0" selected = "selected" disabled> Choose Language </option>
+              <option value="71"> Ada </option>
+              <option value="49"> AI Shell </option>
+              <option value="32"> APL </option>
+              <option value="320"> Assembly </option>
+              <option value="213"> Assembly(Macro) </option>
+              <option value="64"> ANSI/Quick/Turbo Basic </option>
+              <option value="91"> Basic-Compiled </option>
+              <option value="128"> Basic-Interpreted </option>
+              <option value="128"> C </option>
+              <option value="29"> C++ </option>
+              <option value="91"> ANSI Cobol 85 </option>
+              <option value="105"> Fortran 77 </option>
+              <option value="64"> Forth </option>
+              <option value="105"> Jovial </option>
+              <option value="64"> Lisp </option>
+              <option value="80"> Modula 2 </option>
+              <option value="91"> Pascal </option>
+              <option value="64"> Prolog </option>
+              <option value="80"> Report Generator </option>
+              <option value="6"> Spreadsheet </option>
+            </select>
+          </span><br>
+          <input type="button" id = "final" value="Set KLOC" onclick = "showKLOC()" >
+          <span id = "showKLOC"> </span>
+          <br><br>
+           <input type="reset" value="Reset KLOC" onclick = "resetKLOC()" >
+        </fieldset></div>
+          		<br><br>
+              <!-- Software Scale Drivers -->
+              <fieldset>
+          			<legend>Software Scale Drivers</legend>
+          		<div class="row" ><center>
+                	&emsp;PREC 
+                	<select id="PREC" >
+                  	
+                  	<option value="0"> Very Low </option>
+                  	<option value="1"> Low </option>
+                  	<option value="2" selected = "selected"> Nominal </option>
+                 	  <option value="3"> High </option>
+                  	<option value="4"> Very High </option>
+                  	<option value="5"> Extra High </option>
+                	</select>
+             
+              
+                	&emsp;FLEX
+                	<select id="FLEX" >
+                 	
+                  	<option value="0"> Very Low </option>
+                  	<option value="1"> Low </option>
+                  	<option value="2" selected = "selected"> Nominal </option>
+                  	<option value="3"> High </option>
+                  	<option value="4"> Very High </option>
+                  	<option value="5"> Extra High </option>
+                	</select>
+              
+             
+                	&emsp;RESL
+                	<select id="RESL" >
+                  	
+                  	<option value="0"> Very Low </option>
+                  	<option value="1"> Low </option>
+                  	<option value="2" selected = "selected"> Nominal </option>
+                  	<option value="3"> High </option>
+                  	<option value="4"> Very High </option>
+                  	<option value="5"> Extra High </option>
+                	</select>
+              
+             
+                	&emsp;TEAM
+                	<select id="TEAM" >
+                	
+                  	<option value="0"> Very Low </option>
+                  	<option value="1"> Low </option>
+                  	<option value="2" selected = "selected"> Nominal </option>
+                  	<option value="3"> High </option>
+                  	<option value="4"> Very High </option>
+                 	  <option value="5"> Extra High </option>
+                	</select>
+              
+            
+                	&emsp;PMAT
+                	<select id="PMAT" >
+                  	
+                  	<option value="0"> Very Low </option>
+                  	<option value="1"> Low </option>
+                  	<option value="2" selected = "selected"> Nominal </option>
+                  	<option value="3"> High </option>
+                  	<option value="4"> Very High </option>
+                  	<option value="5"> Extra High </option>
+                	</select></center>
+              	</div>
+              </fieldset>
+              <br><br>
+              <!-- Software Cost Drivers -->
+              <fieldset>
+              	<legend>Software Cost Drivers</legend>
+              	<br>
+            <div class="row">
+              <div class="col m3" style="margin-left: 30px;">
+                Required Software Reliability (RELY)
+                <select id="RELY" >
+                  <option value="0"> Very Low</option>
+                  <option value="1"> Low </option>
+                  <option value="2" selected="selected"> Nominal </option>
+                  <option value="3"> High </option>
+                  <option value="4"> Very High </option>
+                </select>
+              </div><br>
+              <div class="col m3" style="margin-left: 30px;">
+                Data Base Size (DATA)
+                <select id="DATA" >
+                  <option value="0"> Low </option>
+                  <option value="1" selected="selected"> Nominal </option>
+                  <option value="2"> High </option>
+                  <option value="3"> Very High </option>
+                </select>
+              </div><br>
+              <div class="col m3" style="margin-left: 30px;">
+                Complexity (CPLX)
+                <select id="CPLX" >
+                  <option value="0">Very Low</option>
+                  <option value="1"> Low </option>
+                  <option value="2" selected="selected"> Nominal </option>
+                  <option value="3"> High </option>
+                  <option value="4"> Very High </option>
+                  <option value="5"> Extra High </option>
+                </select>
+              </div><br>
+              <div class="col m3" style="margin-left: 30px;">
+                Developed for Reusability (RUSE)
+                <select id="RUSE" >
+                  <option value="0">Very Low</option>
+                  <option value="1" selected="selected"> Nominal </option>
+                  <option value="2"> High </option>
+                  <option value="3"> Very High </option>
+                  <option value="4"> Extra High </option>
+                </select>
+              </div><br>
+              <div class="col m3" style="margin-left: 30px;">
+                Documentation Match to Life-Cycle Needs (DOCU)
+                <select id="DOCU" >
+                  <option value="0">Very Low</option>
+                  <option value="1"> Low </option>
+                  <option value="2" selected="selected"> Nominal </option>
+                  <option value="3"> High </option>
+                  <option value="4"> Very High </option>
+                </select>
+              </div><br>
+              <div class="col m3" style="margin-left: 30px;">
+                Execution Time constraint (TIME)
+                <select id="TIME" >
+                  <option value="0" selected="selected"> Nominal </option>
+                  <option value="1"> High </option>
+                  <option value="2"> Very High </option>
+                  <option value="3"> Extra High </option>
+                </select>
+              </div><br>
+              
+              <div class="col m3" style="margin-left: 30px;">
+                Main Storage Constraint (STOR)
+                <select id="STOR" >
+                  <option value="0" selected="selected"> Nominal </option>
+                  <option value="1"> High </option>
+                  <option value="2"> Very High </option>
+                  <option value="3"> Extra High </option>
+                </select>
+              </div><br>
+              <div class="col m3" style="margin-left: 30px;">
+                Platform Volatility (PVOL)
+                <select id="PVOL" >
+                  <option value="0"> Low </option>
+                  <option value="1" selected="selected"> Nominal </option>
+                  <option value="2"> High </option>
+                  <option value="3"> Very High </option>
+                </select>
+              </div><br>
+              <div class="col m3" style="margin-left: 30px;">
+                Analyst capability (ACAP)
+                <select id="ACAP" >
+                  <option value="0">Very Low</option>
+                  <option value="1"> Low </option>
+                  <option value="2" selected="selected"> Nominal </option>
+                  <option value="3"> High </option>
+                  <option value="4"> Very High </option>
+                </select>
+              </div><br>
+              <div class="col m3" style="margin-left: 30px;">
+                Program Capability (PCAP)
+                <select id="PCAP" >
+                  <option value="0">Very Low</option>
+                  <option value="1"> Low </option>
+                  <option value="2" selected="selected"> Nominal </option>
+                  <option value="3"> High </option>
+                  <option value="4"> Very High </option>
+                </select>
+              </div><br>
+              <div class="col m3" style="margin-left: 30px;">
+                Personnel Continuity (PCON)
+                <select id="PCON" >
+                  <option value="0">Very Low</option>
+                  <option value="1"> Low </option>
+                  <option value="2" selected="selected"> Nominal </option>
+                  <option value="3"> High </option>
+                  <option value="4"> Very High </option>
+                </select>
+              </div><br>
+              <div class="col m3" style="margin-left: 30px;">
+                Applications Experience (APEX)
+                <select id="APEX" >
+                  <option value="0">Very Low</option>
+                  <option value="1"> Low </option>
+                  <option value="2" selected="selected"> Nominal </option>
+                  <option value="3"> High </option>
+                  <option value="4"> Very High </option>
+                </select>
+              </div><br>
+              <div class="col m3" style="margin-left: 30px;">
+                Platform Experience (PLEX)
+                <select id="PLEX" >
+                  <option value="0">Very Low</option>
+                  <option value="1"> Low </option>
+                  <option value="2" selected="selected"> Nominal </option>
+                  <option value="3"> High </option>
+                  <option value="4"> Very High </option>
+                </select>
+              </div><br>
+              <div class="col m3" style="margin-left: 30px;">
+                Language and Tool Experience (LTEX)
+                <select id="LTEX" >
+                  <option value="0">Very Low</option>
+                  <option value="1"> Low </option>
+                  <option value="2" selected="selected"> Nominal </option>
+                  <option value="3"> High </option>
+                  <option value="4"> Very High </option>
+                </select>
+              </div><br>
+              <div class="col m3" style="margin-left: 30px;">
+                Use of Software Tools (TOOL)
+                <select id="TOOL" >
+                  <option value="0">Very Low</option>
+                  <option value="1"> Low </option>
+                  <option value="2" selected="selected"> Nominal </option>
+                  <option value="3"> High </option>
+                  <option value="4"> Very High </option>
+                </select>
+              </div><br>
+              <div class="col m3" style="margin-left: 30px;">
+                Multisite Development (SITE)
+                <select id="SITE" >
+                  <option value="0">Very Low</option>
+                  <option value="1"> Low </option>
+                  <option value="2" selected="selected"> Nominal </option>
+                  <option value="3"> High </option>
+                  <option value="4"> Very High </option>
+                  <option value="5"> Extra High </option>
+                </select>
+              </div><br>
+              <div class="col m3" style="margin-left: 30px;">
+                Required Development Schedule (SCED)
+                <select id="SCED" >
+                  <option value="0">Very Low</option>
+                  <option value="1"> Low </option>
+                  <option value="2" selected="selected"> Nominal </option>
+                  <option value="3"> High </option>
+                  <option value="4"> Very High </option>
+                </select>
+              </div><br>
+            </div>
+          </fieldset>
+          <!-- Calculated Result -->
+          <p><b>Software Labour rates</b><br>Cost per person-month (in dollars): &nbsp <input text = "Number" id = "Cost" placeholder = "Enter cost per pm here" name = "Cost" value=""></p>
+          <div><input type = "button" value = "Calculate Result" onclick = "calculate()">
+          <input type="reset" value="Reset" onclick = "location.reload()"/></div>
+          <br><br>
+          <fieldset>
+            <legend> Result </legend>
+            <span id = "output"></span>
+          </fieldset>
+			</form>
+		</body>
+
+	</html>
